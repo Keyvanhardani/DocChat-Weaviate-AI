@@ -1,0 +1,9 @@
+streamlit
+openai
+PyPDF2
+sentence-transformers
+weaviate-client
+transformers
+torch
+uuid
+dotenv
