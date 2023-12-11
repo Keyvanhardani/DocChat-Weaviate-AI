@@ -57,7 +57,7 @@ client.schema.create(schema)
 def ask_gpt(question, documents):
 
     messages = [
-        {"role": "system", "content": "Bitte beantworte auf die folgende Frage:"},
+        {"role": "system", "content": "Please answer the following question:"},
         {"role": "user", "content": question}
     ]
 
