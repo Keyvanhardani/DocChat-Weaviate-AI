@@ -6,4 +6,5 @@ weaviate-client
 transformers
 torch
 uuid
-dotenv
+python-dotenv
+langchain
