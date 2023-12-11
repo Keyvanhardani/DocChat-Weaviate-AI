@@ -22,18 +22,16 @@ api_key = os.environ["AUTHENTICATION_APIKEY_ALLOWED_KEYS"]
 api_user = os.environ["AUTHENTICATION_APIKEY_USERS"]
 
 if openai_api_key is None:                                          
-    raise ValueError("OpenAI API-Schlüssel wurde nicht gefunden. Bitte setzen Sie die Umgebungsvariable 'OPENAI_API_KEY'.")
-                                                                             
+    raise ValueError("OpenAI API key not found. Please set the 'OPENAI_API_KEY' environment variable.")
+                                                                       
 # Instantiate the client with the auth config
 client = Client(
-    url="http://148.251.184.47:8090",  # Replace w/ your endpoint
+    url="http://148.251.184.47:8090",  # Replace w/ your Weaviate endpoint
     auth_client_secret=weaviate.AuthApiKey(api_key=api_key),  # Replace w/ your Weaviate instance API key
 )
 
 GPTClient = OpenAI()
 
-
-# Überprüfen Sie, ob die Klasse existiert, bevor Sie sie löschen
 existing_classes = client.schema.get()['classes']
 
 if any(_class['class'] == 'Author' for _class in existing_classes):
@@ -57,23 +55,21 @@ client.schema.delete_all()
 client.schema.create(schema)
 
 def ask_gpt(question, documents):
-    # Formulieren Sie die Nachrichten für die Chat-Anfrage
+
     messages = [
         {"role": "system", "content": "Bitte beantworte auf die folgende Frage:"},
         {"role": "user", "content": question}
     ]
 
-    # Fügen Sie den Kontext aus den Dokumenten hinzu
     for doc in documents:
         messages.append({"role": "system", "content": doc})
 
-    # Senden Sie die Anfrage an OpenAI
+    # Send to openai
     response = GPTClient.chat.completions.create(
         model="gpt-4-1106-preview",
         messages=messages
     )
 
-    # Geben Sie die Antwort zurück
     return response.choices[0].message.content
 
 
@@ -117,40 +113,35 @@ footer {visibility: hidden;}
     uuids = []
 
     if file:
-        # PDF verarbeiten
+        # PDF Pre.
         pdf_reader = PdfReader(file)
         text = ""
         for page in pdf_reader.pages:
             text += page.extract_text() or ""
 
-        # Text in Chunks unterteilen
+        # Text to Chunks
         text_splitter = CharacterTextSplitter(separator="\n", chunk_size=1000, chunk_overlap=200, length_function=len)
         chunks = text_splitter.split_text(text)
 
-        # Chunks in Weaviate speichern und UUIDs sammeln
+        # Save chunks and get the uuid
         for chunk in chunks:
             chunk_uuid = str(uuid_lib.uuid4())
             client.data_object.create(data_object={"text": chunk}, class_name="Document", uuid=chunk_uuid)
             uuids.append(chunk_uuid)
 
-        # Benutzerabfrage
         user_question = st.sidebar.text_input("Ask a question about the document:")
-
-        # Layout mit zwei Spalten
         col1, col2 = st.columns((2, 1))
 
         if user_question:
-            # Weaviate-Suche durchführen
+            # Weaviate-Search
             search_results = client.query.get('Document', ['text']).with_near_text({"concepts": [user_question]}).with_limit(5).do()
             docs = [obj['text'] for obj in search_results['data']['Get']['Document']]
 
-            # Linke Spalte: Antwort von GPT-3
             with col1:
                 gpt_answer = ask_gpt(user_question, docs)
                 st.subheader("Answer from ChatGPT:")
                 st.write(gpt_answer)
 
-            # Rechte Spalte: Weaviate Suchergebnisse und Dokumenten-Chunks
             with col2:
                 st.subheader("Weaviate Search Results:")
                 for doc in docs:
