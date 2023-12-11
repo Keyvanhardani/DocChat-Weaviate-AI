@@ -25,9 +25,6 @@ AI-Driven DocChat is an innovative application that combines Weaviate's vector s
 ## Note
 Ensure you have valid API keys for OpenAI and Weaviate to fully utilize the application's functionality.
 
-## Contributors
-- [Your Name/GitHub Link]
-
 ## License
 This project is under the [MIT License](LICENSE).
 
