@@ -15,22 +15,15 @@ import weaviate
 tokenizer = AutoTokenizer.from_pretrained("google/flan-t5-base")
 transformer_model = AutoModelForSeq2SeqLM.from_pretrained("google/flan-t5-base")
 sentence_transformer_model = SentenceTransformer('paraphrase-distilroberta-base-v1')
-
-# Ihr API-Token
-api_token = "eaad6adf4d1af5ce7ba2af2e55ae68d3cf5e83f391c58376a270588521d9827f"  # ersetzen Sie dies durch Ihren API-Token
-
-# Setzen Sie den Header für Ihre Anforderung
-headers = {"Authorization": f"Bearer {api_token}"}
-
-
+                                                                    
 load_dotenv()
 openai_api_key = os.environ["OPENAI_API_KEY"]
 api_key = os.environ["AUTHENTICATION_APIKEY_ALLOWED_KEYS"]
 api_user = os.environ["AUTHENTICATION_APIKEY_USERS"]
 
-if openai_api_key is None:
+if openai_api_key is None:                                          
     raise ValueError("OpenAI API-Schlüssel wurde nicht gefunden. Bitte setzen Sie die Umgebungsvariable 'OPENAI_API_KEY'.")
-
+                                                                             
 # Instantiate the client with the auth config
 client = Client(
     url="http://148.251.184.47:8090",  # Replace w/ your endpoint
@@ -173,9 +166,8 @@ footer {visibility: hidden;}
     st.markdown(hide_streamlit_style, unsafe_allow_html=True) 
 
 
-    st.sidebar.markdown("### About this app")
-    st.sidebar.info("This application is powered by Weaviate's vector search and OpenAI's GPT-3, providing an AI-driven approach to document analysis.")
-      
+    st.sidebar.markdown("### About this App")
+    st.sidebar.info("Developed by Keyvan Hardani, this application combines Weaviate's vector search with OpenAI's GPT-4 for sophisticated document analysis. Users can upload PDF documents and ask context-specific questions, which are answered using advanced search and AI-driven response mechanisms.")
 
 if __name__ == '__main__':
     main()
